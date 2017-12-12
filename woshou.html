@@ -14,9 +14,14 @@ ws.onopen=function()
     console.log("握手成功!");
 };
 
+ws.onmessage = function(e){
+    console.log("message:" + e.data);
+};
+
 ws.onerror=function()
 {
     console.log("error");
 };
+ws.send("1111");
 </script>
 </html>
