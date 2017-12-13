@@ -1,5 +1,6 @@
 <?php
 set_time_limit(0);
+//header("Content-Type:text/html;charset=utf-8;");
 
 class WoShou{
      var $master; //连接server的client
@@ -44,7 +45,7 @@ class WoShou{
                  else 
                  {
                      $bytes=@socket_recv($socket, $buffer,2048,0);
-                     print_r($buffer);
+                     //print_r($buffer);
                      if($bytes==0) return;
                      if(!$this->is_handshanke)
                      {
@@ -54,10 +55,15 @@ class WoShou{
                      }
                      else 
                      {
+                     	//echo "yi jing wo shou l ,chu li luo ji!";
+                     	 print_r($this->sockets);
                          //如果已经握手，直接接受数据，并处理
                          $buffer=$this->decode($buffer);
                          
-                         echo $this->send($socket,$buffer);
+                         $buffer=$this->frame($buffer);
+                         echo $buffer."3232";
+                         //print_r($buffer);                         
+                         $this->send($socket,$buffer);
                      }
                  }
              }
@@ -72,6 +78,7 @@ class WoShou{
         {
            $key=$match[1];
         }
+        echo "tiqudekey:".$key."\n";
         return $key;
      }
      
@@ -80,8 +87,9 @@ class WoShou{
      {
          $key=trim($this->getKey($req));
          //debug
-         print_r($key);
+         //print_r($key);
          //$mask="258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+         echo "jiamihou:".base64_encode(sha1($key.'258EAFA5-E914-47DA-95CA-C5AB0DC85B11',true))."\n";
          return base64_encode(sha1($key.'258EAFA5-E914-47DA-95CA-C5AB0DC85B11',true));
      }
      
@@ -122,7 +130,7 @@ class WoShou{
 	}
 	
 	// 返回帧信息处理
-	private function frame($s) {
+	private function frame($buffer) {
 	    $a = str_split($s, 125);
 	    if (count($a) == 1) {
 	        return "\x81" . chr(strlen($a[0])) . $a[0];
@@ -136,8 +144,10 @@ class WoShou{
 	
 	// 返回数据
 	public function send($client, $msg){
+		
 	    $msg = $this->frame($msg);
-	    socket_write($client, $msg, strlen($msg));
+	    //echo "msg".$msg."\n";
+	    socket_write($client,$msg,strlen($msg));
 	}
 
 }

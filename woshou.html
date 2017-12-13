@@ -9,9 +9,20 @@
 </body>
 <script type="text/javascript">
 var ws=new WebSocket("ws://localhost:9999");
+
 ws.onopen=function()
 {
     console.log("握手成功!");
+    if(ws.readyState===WebSocket.OPEN)
+    {
+        console.log("readyState:"+ws.readyState);
+        console.log("WebSocket.OPEN:"+WebSocket.OPEN);
+    	//ws.send("hello world!");
+    }
+    else
+    {
+        console.log('连接未建立!');
+    }
 };
 
 ws.onmessage = function(e){
@@ -22,6 +33,9 @@ ws.onerror=function()
 {
     console.log("error");
 };
-ws.send("1111");
+
+
+
+
 </script>
 </html>
